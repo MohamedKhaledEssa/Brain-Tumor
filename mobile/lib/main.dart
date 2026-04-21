@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +32,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -102,12 +106,20 @@ class _MyHomePageState extends State<MyHomePage> {
           // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const UploadPage()),
+              ),
+              icon: const Icon(Icons.upload_file),
+              label: const Text('Upload file / image'),
             ),
           ],
         ),
@@ -116,6 +128,83 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class UploadPage extends StatefulWidget {
+  const UploadPage({super.key});
+
+  @override
+  State<UploadPage> createState() => _UploadPageState();
+}
+
+class _UploadPageState extends State<UploadPage> {
+  String? _pickedName;
+  Uint8List? _pickedBytes;
+
+  Future<void> _pickFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        withData: true,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.first;
+      setState(() {
+        _pickedName = file.name;
+        _pickedBytes = file.bytes;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to pick file: $e'),
+      ));
+    }
+  }
+
+  Widget _buildPreview() {
+    if (_pickedBytes == null) return const SizedBox.shrink();
+    // Try to display image if it's an image mime type by attempting Image.memory
+    return Column(
+      children: [
+        Text(_pickedName ?? ''),
+        const SizedBox(height: 8),
+        Image.memory(_pickedBytes!, height: 240, fit: BoxFit.contain),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Upload file / image')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton.icon(
+              onPressed: _pickFile,
+              icon: const Icon(Icons.attach_file),
+              label: const Text('Choose file'),
+            ),
+            const SizedBox(height: 16),
+            if (_pickedName != null) _buildPreview(),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: _pickedBytes == null
+                  ? null
+                  : () async {
+                      // Placeholder: handle upload logic here (HTTP, storage, etc.)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('File ready to upload')),
+                      );
+                    },
+              child: const Text('Upload'),
+            ),
+          ],
+        ),
       ),
     );
   }
