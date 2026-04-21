@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 
 void main() {
   runApp(const MyApp());
@@ -146,15 +146,13 @@ class _UploadPageState extends State<UploadPage> {
 
   Future<void> _pickFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        withData: true,
-      );
-      if (result == null || result.files.isEmpty) return;
-      final file = result.files.first;
+      final XFile? result = await openFile();
+      if (result == null) return;
+      final name = result.name;
+      final bytes = await result.readAsBytes();
       setState(() {
-        _pickedName = file.name;
-        _pickedBytes = file.bytes;
+        _pickedName = name;
+        _pickedBytes = bytes;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
