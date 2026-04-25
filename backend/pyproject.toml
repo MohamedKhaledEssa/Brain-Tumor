@@ -1,0 +1,27 @@
+[project]
+name = "brain-tumor-backend"
+version = "0.1.0"
+description = "FastAPI backend for the Brain Tumor Detection mobile app."
+requires-python = ">=3.10"
+authors = [{ name = "Mohamed Khaled Essa" }]
+readme = "README.md"
+license = { text = "MIT" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = ["models", "tests/fixtures"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W"]
+# B008: FastAPI uses `Depends()` / `File()` / `Form()` in argument defaults by
+# design — that's the supported pattern, so silence the warning project-wide.
+ignore = ["E501", "B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning:torchvision.*",
+    "ignore::UserWarning:torchvision.*",
+]
