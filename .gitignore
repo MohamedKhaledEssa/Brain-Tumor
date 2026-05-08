@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Python virtual environment
+model/venv/
+
+# Dataset ZIP (too large for git — upload manually to Drive)
+model/brain_tumor_dataset.zip
+
+# YOLOv8 training/eval run outputs
+runs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

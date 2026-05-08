@@ -1,0 +1,16 @@
+# Local machine dependencies (macOS)
+# Install with: pip install -r requirements_local.txt
+
+# Core ML — YOLOv8 and all its transitive deps (torch, torchvision, etc.)
+ultralytics>=8.0.0
+
+# Image I/O and processing
+Pillow>=10.0.0
+opencv-python>=4.8.0
+
+# Numeric / visualization
+numpy>=1.24.0
+matplotlib>=3.7.0
+
+# Progress bars
+tqdm>=4.65.0
